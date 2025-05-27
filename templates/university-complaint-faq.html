@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - University Complaint Portal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Header Styling */
+        .faq-header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Search Box Styling */
+        .search-container {
+            max-width: 600px;
+            margin: -30px auto 40px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        #searchFAQ {
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+        
+        /* Tab Navigation */
+        .faq-nav {
+            margin-bottom: 30px;
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--dark-color);
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin: 0 5px 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+        }
+        
+        .nav-pills .nav-link:hover:not(.active) {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        /* Accordion Styling */
+        .accordion {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .accordion-item {
+            border: none;
+            margin-bottom: 2px;
+        }
+        
+        .accordion-button {
+            background-color: white;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 20px;
+            box-shadow: none !important;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: #e7f1ff;
+            color: var(--primary-color);
+        }
+        
+        .accordion-button:focus {
+            box-shadow: none;
+        }
+        
+        .accordion-body {
+            padding: 20px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        /* Category Tags */
+        .category-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+            color: white;
+        }
+        
+        .tag-general { background-color: #6c757d; }
+        .tag-submission { background-color: var(--secondary-color); }
+        .tag-technical { background-color: #fd7e14; }
+        .tag-reporting { background-color: #dc3545; }
+        .tag-privacy { background-color: #6f42c1; }
+        
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .back-to-top:hover {
+            background-color: #0056b3;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .faq-header {
+                padding: 40px 0;
+            }
+            
+            .search-container {
+                margin: -20px auto 30px;
+            }
+            
+            #searchFAQ {
+                padding: 12px 20px;
+            }
+            
+            .nav-pills .nav-link {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .accordion-button {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- FAQ Header Section -->
+    <header class="faq-header">
+        <div class="container">
+            <h1><i class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h1>
+            <p class="lead">Find answers to common questions about the University Complaint Portal</p>
+        </div>
+    </header>
+
+    <div class="container mb-5">
+        <!-- Search Box -->
+        <div class="search-container">
+            <input type="text" id="searchFAQ" class="form-control" placeholder="Search for questions or keywords...">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+        </div>
+
+        <!-- FAQ Navigation Tabs -->
+        <ul class="nav nav-pills faq-nav justify-content-center" id="faqTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab" aria-selected="true">
+                    <i class="fas fa-th-large me-1"></i> All Questions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab" aria-selected="false">
+                    <i class="fas fa-info-circle me-1"></i> General
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="submission-tab" data-bs-toggle="pill" data-bs-target="#submission" type="button" role="tab" aria-selected="false">
+                    <i class="fas fa-file-alt me-1"></i> Submission
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="technical-tab" data-bs-toggle="pill" data-bs-target="#technical" type="button" role="tab" aria-selected="false">
+                    <i class="fas fa-laptop-code me-1"></i> Technical
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reporting-tab" data-bs-toggle="pill" data-bs-target="#reporting" type="button" role="tab" aria-selected="false">
+                    <i class="fas fa-chart-bar me-1"></i> Reporting
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="privacy-tab" data-bs-toggle="pill" data-bs-target="#privacy" type="button" role="tab" aria-selected="false">
+                    <i class="fas fa-shield-alt me-1"></i> Privacy
+                </button>
+            </li>
+        </ul>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h3>No matching questions found</h3>
+                <p class="text-muted">Try different keywords or browse through the categories</p>
+                <button id="resetSearch" class="btn btn-primary mt-3">Reset Search</button>
+            </div>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="tab-content" id="faqTabContent">
+            <!-- All Questions Tab -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                <div class="accordion" id="allAccordion">
+                    <!-- General FAQ Items -->
+                    <div class="accordion-item" data-category="general">
+                        <h2 class="accordion-header" id="heading1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                <span class="category-tag tag-general">General</span> What is the University Complaint Portal?
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="heading1" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                The University Complaint Portal is a centralized platform designed to address concerns and feedback from students, faculty, and staff efficiently. It streamlines the process of submitting, tracking, and resolving complaints across all university departments, ensuring accountability and timely responses.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="general">
+                        <h2 class="accordion-header" id="heading2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                <span class="category-tag tag-general">General</span> Who can use the Complaint Portal?
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                The Complaint Portal is available to all members of the university community, including:
+                                <ul>
+                                    <li>Current students (undergraduate and graduate)</li>
+                                    <li>Faculty members</li>
+                                    <li>Administrative and support staff</li>
+                                    <li>Alumni (for specific matters related to transcripts and certificates)</li>
+                                    <li>Visitors and external stakeholders (for specific concerns related to university facilities or services)</li>
+                                </ul>
+                                Each user category has appropriate access levels and complaint categories.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submission FAQ Items -->
+                    <div class="accordion-item" data-category="submission">
+                        <h2 class="accordion-header" id="heading3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                <span class="category-tag tag-submission">Submission</span> How do I submit a complaint?
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                To submit a complaint:
+                                <ol>
+                                    <li>Log in to the portal using your university credentials</li>
+                                    <li>Click on the "Submit a Complaint" button on the homepage</li>
+                                    <li>Select the appropriate category for your complaint</li>
+                                    <li>Fill out the required fields in the form, providing as much detail as possible</li>
+                                    <li>Attach any relevant documents, screenshots, or evidence (optional)</li>
+                                    <li>Review your submission for accuracy</li>
+                                    <li>Click "Submit" to finalize your complaint</li>
+                                </ol>
+                                After submission, you'll receive a confirmation email with a unique tracking number.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="submission">
+                        <h2 class="accordion-header" id="heading4">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                <span class="category-tag tag-submission">Submission</span> What types of complaints can I submit?
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                The portal accepts various types of complaints, including but not limited to:
+                                <ul>
+                                    <li>Academic concerns (grading, course content, faculty behavior)</li>
+                                    <li>Administrative issues (registration, financial aid, billing)</li>
+                                    <li>Campus facilities (maintenance, cleanliness, accessibility)</li>
+                                    <li>Technology services (network, software, equipment)</li>
+                                    <li>Housing and dining concerns</li>
+                                    <li>Harassment, discrimination, or misconduct</li>
+                                    <li>Health and safety issues</li>
+                                    <li>Student services (advising, career services, counseling)</li>
+                                </ul>
+                                For emergency situations requiring immediate attention, please contact Campus Security directly at the emergency hotline rather than using this portal.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="submission">
+                        <h2 class="accordion-header" id="heading5">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                <span class="category-tag tag-submission">Submission</span> Can I submit an anonymous complaint?
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                Yes, the portal allows for anonymous complaints in specific situations. To submit anonymously:
+                                <ol>
+                                    <li>Select "Submit Anonymously" at the beginning of the submission form</li>
+                                    <li>You'll be provided with a unique anonymous tracking ID</li>
+                                    <li>Complete the form as usual</li>
+                                </ol>
+                                <p><strong>Important considerations:</strong></p>
+                                <ul>
+                                    <li>Anonymous complaints may be more difficult to investigate if additional information is needed</li>
+                                    <li>For certain serious allegations (e.g., those involving violence or legal violations), the university may be required to investigate even with limited information</li>
+                                    <li>You cannot receive direct updates on anonymous complaints, but you can check status using your anonymous tracking ID</li>
+                                </ul>
+                                For complaints involving harassment, discrimination, or serious misconduct, consider using the confidential reporting option instead, which protects your identity while allowing limited secure communication.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Technical FAQ Items -->
+                    <div class="accordion-item" data-category="technical">
+                        <h2 class="accordion-header" id="heading6">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                <span class="category-tag tag-technical">Technical</span> I can't log in to the portal. What should I do?
+                            </button>
+                        </h2>
+                        <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                If you're experiencing login issues, please try the following steps:
+                                <ol>
+                                    <li>Verify you're using your correct university ID and password (same as your university email credentials)</li>
+                                    <li>Clear your browser cache and cookies</li>
+                                    <li>Try using a different web browser</li>
+                                    <li>Ensure your internet connection is stable</li>
+                                    <li>Check if the university systems are experiencing downtime (visit the IT Services status page)</li>
+                                </ol>
+                                
+                                If you still can't log in:
+                                <ul>
+                                    <li>Use the "Forgot Password" link to reset your password</li>
+                                    <li>Contact the IT Help Desk at helpdesk@university.edu or call (555) 123-4567</li>
+                                    <li>In urgent cases, you can submit a complaint using the temporary access form available at the bottom of the login page (requires additional verification)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="technical">
+                        <h2 class="accordion-header" id="heading7">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                <span class="category-tag tag-technical">Technical</span> How can I upload files to support my complaint?
+                            </button>
+                        </h2>
+                        <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                You can upload supporting files during the complaint submission process:
+                                <ol>
+                                    <li>In the complaint form, locate the "Attachments" section</li>
+                                    <li>Click the "Add Files" button or drag and drop files into the designated area</li>
+                                    <li>You can upload multiple files (up to 10) with a combined size limit of 25MB</li>
+                                </ol>
+                                
+                                <p><strong>Supported file formats:</strong></p>
+                                <ul>
+                                    <li>Documents: PDF, DOC, DOCX, TXT, RTF</li>
+                                    <li>Images: JPG, PNG, GIF</li>
+                                    <li>Audio: MP3, WAV (max 5 minutes per file)</li>
+                                    <li>Video: MP4 (max 2 minutes, max size 10MB)</li>
+                                    <li>Others: CSV, XLS, XLSX</li>
+                                </ul>
+                                
+                                <p>If you need to submit larger files or unsupported formats, please mention this in your complaint description, and a staff member will contact you with alternative submission options.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reporting FAQ Items -->
+                    <div class="accordion-item" data-category="reporting">
+                        <h2 class="accordion-header" id="heading8">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                <span class="category-tag tag-reporting">Reporting</span> How can I track the status of my complaint?
+                            </button>
+                        </h2>
+                        <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                You can track your complaint status in several ways:
+                                
+                                <p><strong>1. Through your account dashboard:</strong></p>
+                                <ul>
+                                    <li>Log in to the portal</li>
+                                    <li>Click on "Track Complaint Status" or navigate to "My Complaints" in your dashboard</li>
+                                    <li>View a list of all your submitted complaints with their current status</li>
+                                    <li>Click on any complaint to view detailed status information and updates</li>
+                                </ul>
+                                
+                                <p><strong>2. Using your tracking number:</strong></p>
+                                <ul>
+                                    <li>On the portal homepage, click "Track Complaint Status"</li>
+                                    <li>Enter your complaint tracking number (sent to you via email after submission)</li>
+                                    <li>For anonymous complaints, use your anonymous tracking ID</li>
+                                </ul>
+                                
+                                <p><strong>3. Via email notifications:</strong></p>
+                                <ul>
+                                    <li>You'll automatically receive email updates when your complaint status changes</li>
+                                    <li>You can adjust notification preferences in your account settings</li>
+                                </ul>
+                                
+                                <p>Complaint statuses include: Submitted, Under Review, In Progress, Pending Additional Information, Referred to Department, Resolved, and Closed.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="reporting">
+                        <h2 class="accordion-header" id="heading9">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                <span class="category-tag tag-reporting">Reporting</span> How long does it take to resolve a complaint?
+                            </button>
+                        </h2>
+                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                Resolution time varies depending on the type and complexity of the complaint:
+                                
+                                <p><strong>Target resolution timeframes:</strong></p>
+                                <ul>
+                                    <li><strong>Simple inquiries/issues:</strong> 1-3 business days</li>
+                                    <li><strong>Standard complaints:</strong> 5-10 business days</li>
+                                    <li><strong>Complex matters:</strong> 10-20 business days</li>
+                                    <li><strong>Issues requiring investigation:</strong> 20-30 business days</li>
+                                </ul>
+                                
+                                <p>If your complaint requires more time than the standard timeframes, you'll receive a notification explaining the delay and providing an updated expected resolution date.</p>
+                                
+                                <p>Factors that may extend resolution time include:</p>
+                                <ul>
+                                    <li>Need for in-depth investigation</li>
+                                    <li>Involvement of multiple departments</li>
+                                    <li>High complaint volume during peak periods (beginning/end of semesters)</li>
+                                    <li>University holidays or breaks</li>
+                                    <li>Need for additional information from you</li>
+                                </ul>
+                                
+                                <p>For urgent matters requiring expedited review, please indicate this in your submission with a clear explanation of the urgency.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy FAQ Items -->
+                    <div class="accordion-item" data-category="privacy">
+                        <h2 class="accordion-header" id="heading10">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                                <span class="category-tag tag-privacy">Privacy</span> Who can see my complaint information?
+                            </button>
+                        </h2>
+                        <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                The university takes your privacy seriously. Access to complaint information is strictly limited:
+                                
+                                <p><strong>Who can access your complaint:</strong></p>
+                                <ul>
+                                    <li>Authorized complaint handlers and administrators directly involved in processing your case</li>
+                                    <li>Department representatives responsible for addressing the specific issue</li>
+                                    <li>University officials with oversight responsibilities when necessary</li>
+                                </ul>
+                                
+                                <p><strong>Privacy safeguards:</strong></p>
+                                <ul>
+                                    <li>All staff with access sign confidentiality agreements</li>
+                                    <li>Access is granted on a need-to-know basis only</li>
+                                    <li>The system logs all accesses to complaint data for audit purposes</li>
+                                    <li>Sensitive complaints (involving discrimination, harassment, etc.) have additional access restrictions</li>
+                                </ul>
+                                
+                                <p><strong>Confidentiality levels:</strong></p>
+                                <ul>
+                                    <li><strong>Standard:</strong> Visible to relevant department staff and administrators</li>
+                                    <li><strong>Confidential:</strong> Limited to specifically designated handlers</li>
+                                    <li><strong>Anonymous:</strong> Your identity is not recorded in the system</li>
+                                </ul>
+                                
+                                <p>Your data is handled in accordance with the university's Privacy Policy and applicable privacy laws. You can request information about who has accessed your complaint by contacting the Data Protection Officer.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item" data-category="privacy">
+                        <h2 class="accordion-header" id="heading11">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                                <span class="category-tag tag-privacy">Privacy</span> How long is my complaint information stored?
+                            </button>
+                        </h2>
+                        <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11" data-bs-parent="#allAccordion">
+                            <div class="accordion-body">
+                                <p>The university has established data retention policies for complaint information:</p>
+                                
+                                <p><strong>Retention periods:</strong></p>
+                                <ul>
+                                    <li><strong>Active complaints:</strong> Stored for the duration of processing and resolution</li>
+                                    <li><strong>Resolved complaints:</strong> Retained for 3 years after resolution</li>
+                                    <li><strong>Complaints involving academic records:</strong> Retained for 5 years</li>
+                                    <li><strong>Complaints involving legal or policy violations:</strong> Retained for 7 years</li>
+                                    <li><strong>De-identified statistical data:</strong> May be kept indefinitely for analysis and reporting</li>
+                                </ul>
+                                
+                                <p><strong>After the retention period:</strong></p>
+                                <ul>
+                                    <li>Personally identifiable information is securely deleted</li>
+                                    <li>Attachments are purged from the system</li>
+                                    <li>Basic metadata may be preserved in an anonymized format for statistical purposes</li>
+                                </ul>
+                                
+                                <p>You have the right to request deletion of your personal information earlier than the standard retention period, subject to legal requirements and university policies. Contact the Data Protection Officer with such requests.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- General Tab -->
+            <div class="tab-pane fade" id="general" role="tabpanel" aria-labelledby="general-tab">
+                <div class="accordion" id="generalAccordion">
+                    <!-- General FAQ Items (duplicated from all section) -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="gen-heading1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gen-collapse1" aria-expanded="false" aria-controls="gen-collapse1">
+                                <span class="category-tag tag-general">General</span> What is the University Complaint Portal?
+                            </button>
+                        </h2>
+                        <div id="gen-collapse1" class="accordion-collapse collapse" aria-labelledby="gen-heading1" data-bs-parent="#generalAccordion">
+                            <div class="accordion-body">
+                                The University Complaint Portal is a centralized platform designed to address concerns and feedback from students, faculty, and staff efficiently. It streamlines the process of submitting, tracking, and resolving complaints across all university departments, ensuring accountability and timely responses.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="gen-heading2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gen-collapse2" aria-expanded="false" aria-controls="gen-collapse2">
+                                <span class="

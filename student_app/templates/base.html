@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}University Complaint Portal{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* All your CSS from the original file goes here */
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f3f4f6;
+            --dark-color: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Include all remaining CSS rules */
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <i class="fas fa-comments"></i> University Complaint Portal
+                </div>
+                <div class="nav-links">
+                    <!-- <a href="{% url 'student_app:services' %}">Service</a> -->
+                    <a href="{% url 'student_app:login' %}">Login</a>
+                    <a href="{% url 'student_app:faq' %}">FAQs</a>
+                    <a href="{% url 'student_app:contact' %}">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        <div class="container">
+            <h1>Welcome to the University Complaint Portal</h1>
+            <p>Your feedback is important to us. Please let us know your concerns or suggestions.</p>
+            <a href="{% url 'student_app:complaint_submission' %}" class="btn btn-success">Submit a Complaint</a>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'student_app:complaint_submission' %}">Submit Complaint</a></li>
+                        <li><a href="{% url 'student_app:complaint_tracker' %}">Track Status</a></li>
+                        <li><a href="{% url 'student_app:faq' %}">FAQs</a></li>
+                        <li><a href="{% url 'student_app:dashboard' %}">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="{% url 'user_guide' %}">User Guide</a></li>
+                        <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'terms' %}">Terms of Service</a></li>
+                        <li><a href="{% url 'accessibility' %}">Accessibility</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> support@universitycomplaint.edu</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt"></i> University Campus, Building A</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 University Complaint Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}
+    <script>
+        // Base JavaScript functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "flex";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+    {% endblock %}
+</body>
+
+</html>
+
+<form id="loginForm" method="POST" action="{% url 'student_app:login' %}">

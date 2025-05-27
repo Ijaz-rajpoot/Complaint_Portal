@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Status Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+        .progress {
+            height: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-step {
+            position: relative;
+            text-align: center;
+            padding-top: 20px;
+        }
+        .progress-step::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            z-index: 2;
+        }
+        .progress-step.active::before {
+            background-color: #0d6efd;
+        }
+        .progress-step.complete::before {
+            background-color: #198754;
+        }
+        .progress-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        .search-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .result-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #0d6efd;
+        }
+        .hide {
+            display: none;
+        }
+        .invalid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 80%;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <div class="logo">
+                        <i class="fas fa-clipboard-check me-2"></i>Complaint Status Tracker
+                    </div>
+                    <p class="text-secondary">Search by Complaint ID or user login to track status.</p>
+                </div>
+                
+                <div class="card search-card mb-4">
+                    <div class="card-body p-4">
+                        <form id="searchForm">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="searchInput" placeholder="Enter Complaint ID or Username">
+                                        <div class="invalid-feedback">
+                                            Please enter a valid Complaint ID or Username.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="searchType">
+                                        <option value="id">Complaint ID</option>
+                                        <option value="user">Username</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2">
+                                    <i class="fas fa-search me-2"></i>Track Complaint
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="resultsContainer" class="hide">
+                    <div id="noResults" class="alert alert-warning hide">
+                        <i class="fas fa-exclamation-triangle me-2"></i>No complaints found. Please check your search criteria.
+                    </div>
+                    
+                    <div id="complaintDetails" class="card result-card mb-4 hide">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0">
+                                    <span class="badge bg-primary me-2">Complaint</span>
+                                    <span id="complaintId"></span>
+                                </h5>
+                                <span id="statusBadge" class="badge"></span>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-secondary">Submitted by</p>
+                                    <p class="fw-bold" id="submittedBy"></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-secondary">Date Submitted</p>
+                                    <p class="fw-bold" id="dateSubmitted"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <p class="mb-1 text-secondary">Description</p>
+                                <p id="complaintDescription"></p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6 class="mb-3">Progress Tracker</h6>
+                                <div class="progress">
+                                    <div id="progressBar" class="progress-bar" role="progressbar"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="progress-step" id="step1">
+                                        <div class="progress-label">Received</div>
+                                    </div>
+                                    <div class="progress-step" id="step2">
+                                        <div class="progress-label">Under Review</div>
+                                    </div>
+                                    <div class="progress-step" id="step3">
+                                        <div class="progress-label">In Progress</div>
+                                    </div>
+                                    <div class="progress-step" id="step4">
+                                        <div class="progress-label">Resolved</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="activityTimeline" class="mt-4">
+                                <h6 class="mb-3">Activity Timeline</h6>
+                                <ul class="list-group list-group-flush" id="activityList">
+                                    <!-- Activity items will be populated here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="multipleResults" class="card result-card hide">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">Multiple complaints found</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Complaint ID</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="complaintsTable">
+                                        <!-- Multiple complaints will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample complaint data for demonstration
+        const complaints = [
+            {
+                id: "COMP-2025-001",
+                user: "john_doe",
+                name: "John Doe",
+                dateSubmitted: "2025-04-15",
+                description: "Website checkout process fails when using credit card payment.",
+                status: "resolved",
+                progress: 4,
+                activities: [
+                    { date: "2025-04-15", action: "Complaint received", note: "Ticket created" },
+                    { date: "2025-04-16", action: "Under review", note: "Assigned to technical team" },
+                    { date: "2025-04-18", action: "In progress", note: "Issue identified with payment gateway" },
+                    { date: "2025-04-22", action: "Resolved", note: "Payment gateway fixed and tested" }
+                ]
+            },
+            {
+                id: "COMP-2025-002",
+                user: "jane_smith",
+                name: "Jane Smith",
+                dateSubmitted: "2025-04-20",
+                description: "Unable to reset password through the forgot password feature.",
+                status: "in_progress",
+                progress: 3,
+                activities: [
+                    { date: "2025-04-20", action: "Complaint received", note: "Ticket created" },
+                    { date: "2025-04-21", action: "Under review", note: "Assigned to account security team" },
+                    { date: "2025-04-23", action: "In progress", note: "Issue identified with email delivery service" }
+                ]
+            },
+            {
+                id: "COMP-2025-003",
+                user: "jane_smith",
+                name: "Jane Smith",
+                dateSubmitted: "2025-04-25",
+                description: "Product received was damaged during shipping.",
+                status: "under_review",
+                progress: 2,
+                activities: [
+                    { date: "2025-04-25", action: "Complaint received", note: "Ticket created" },
+                    { date: "2025-04-26", action: "Under review", note: "Photos of damaged items requested" }
+                ]
+            },
+            {
+                id: "COMP-2025-004",
+                user: "bob_johnson",
+                name: "Bob Johnson",
+                dateSubmitted: "2025-05-01",
+                description: "Monthly subscription charged twice in April.",
+                status: "received",
+                progress: 1,
+                activities: [
+                    { date: "2025-05-01", action: "Complaint received", note: "Ticket created" }
+                ]
+            }
+        ];
+
+        // Function to search for complaints
+        function searchComplaints() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            
+            if (searchValue === '') {
+                document.getElementById('searchInput').classList.add('is-invalid');
+                document.querySelector('.invalid-feedback').style.display = 'block';
+                return false;
+            }
+            
+            let results = [];
+            
+            if (searchType === 'id') {
+                results = complaints.filter(complaint => complaint.id.toLowerCase().includes(searchValue.toLowerCase()));
+            } else {
+                results = complaints.filter(complaint => complaint.user.toLowerCase().includes(searchValue.toLowerCase()));
+            }
+            
+            displayResults(results);
+            return false;
+        }
+
+        // Function to display search results
+        function displayResults(results) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const noResults = document.getElementById('noResults');
+            const complaintDetails = document.getElementById('complaintDetails');
+            const multipleResults = document.getElementById('multipleResults');
+            
+            // Reset display
+            resultsContainer.classList.remove('hide');
+            noResults.classList.add('hide');
+            complaintDetails.classList.add('hide');
+            multipleResults.classList.add('hide');
+            
+            if (results.length === 0) {
+                noResults.classList.remove('hide');
+            } else if (results.length === 1) {
+                displayComplaintDetails(results[0]);
+                complaintDetails.classList.remove('hide');
+            } else {
+                displayMultipleComplaints(results);
+                multipleResults.classList.remove('hide');
+            }
+        }
+
+        // Function to display single complaint details
+        function displayComplaintDetails(complaint) {
+            document.getElementById('complaintId').textContent = complaint.id;
+            document.getElementById('submittedBy').textContent = complaint.name;
+            document.getElementById('dateSubmitted').textContent = formatDate(complaint.dateSubmitted);
+            document.getElementById('complaintDescription').textContent = complaint.description;
+            
+            // Set status badge
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = capitalizeFirstLetter(complaint.status.replace('_', ' '));
+            
+            switch (complaint.status) {
+                case 'received':
+                    statusBadge.className = 'badge bg-secondary';
+                    break;
+                case 'under_review':
+                    statusBadge.className = 'badge bg-info';
+                    break;
+                case 'in_progress':
+                    statusBadge.className = 'badge bg-warning';
+                    break;
+                case 'resolved':
+                    statusBadge.className = 'badge bg-success';
+                    break;
+            }
+            
+            // Update progress bar
+            updateProgressBar(complaint.progress);
+            
+            // Display activities
+            displayActivities(complaint.activities);
+        }
+
+        // Function to update progress bar
+        function updateProgressBar(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const steps = document.querySelectorAll('.progress-step');
+            
+            // Reset all steps
+            steps.forEach(step => {
+                step.classList.remove('active', 'complete');
+            });
+            
+            // Set progress bar width
+            const percentage = (progress - 1) * 100 / 3;
+            progressBar.style.width = `${percentage}%`;
+            
+            // Update steps
+            for (let i = 0; i < progress; i++) {
+                if (i === progress - 1) {
+                    steps[i].classList.add('active');
+                } else {
+                    steps[i].classList.add('complete');
+                }
+            }
+        }
+
+        // Function to display activities
+        function displayActivities(activities) {
+            const activityList = document.getElementById('activityList');
+            activityList.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item border-0 ps-0';
+                
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${activity.action}</strong>
+                            <p class="text-secondary mb-0">${activity.note}</p>
+                        </div>
+                        <div class="text-muted small">${formatDate(activity.date)}</div>
+                    </div>
+                `;
+                
+                activityList.appendChild(listItem);
+            });
+        }
+
+        // Function to display multiple complaints
+        function displayMultipleComplaints(complaints) {
+            const complaintsTable = document.getElementById('complaintsTable');
+            complaintsTable.innerHTML = '';
+            
+            complaints.forEach(complaint => {
+                const row = document.createElement('tr');
+                
+                let statusClass = '';
+                switch (complaint.status) {
+                    case 'received': statusClass = 'bg-secondary'; break;
+                    case 'under_review': statusClass = 'bg-info'; break;
+                    case 'in_progress': statusClass = 'bg-warning'; break;
+                    case 'resolved': statusClass = 'bg-success'; break;
+                }
+                
+                row.innerHTML = `
+                    <td>${complaint.id}</td>
+                    <td>${formatDate(complaint.dateSubmitted)}</td>
+                    <td><span class="badge ${statusClass}">${capitalizeFirstLetter(complaint.status.replace('_', ' '))}</span></td>
+                    <td><button class="btn btn-sm btn-outline-primary view-details" data-id="${complaint.id}">View Details</button></td>
+                `;
+                
+                complaintsTable.appendChild(row);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const complaintId = this.getAttribute('data-id');
+                    const complaint = complaints.find(c => c.id === complaintId);
+                    
+                    if (complaint) {
+                        displayComplaintDetails(complaint);
+                        document.getElementById('multipleResults').classList.add('hide');
+                        document.getElementById('complaintDetails').classList.remove('hide');
+                    }
+                });
+            });
+        }
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Helper function to capitalize first letter
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('searchForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                searchComplaints();
+            });
+            
+            document.getElementById('searchInput').addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                document.querySelector('.invalid-feedback').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

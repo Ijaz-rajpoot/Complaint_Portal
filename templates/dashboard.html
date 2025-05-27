@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Complaint Portal - Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f3f4f6;
+            --dark-color: #111827;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s;
+            z-index: 999;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-header .logo-icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-menu {
+            padding: 0;
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu .icon {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu .text {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .text,
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-menu a {
+            padding: 15px 20px;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-menu .icon {
+            margin-right: 0;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            margin-left: auto;
+        }
+
+        /* Dashboard Header */
+        .dash-header {
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Cards */
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .count {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card.primary .icon {
+            color: var(--primary-color);
+        }
+
+        .stat-card.success .icon {
+            color: var(--success-color);
+        }
+
+        .stat-card.warning .icon {
+            color: var(--warning-color);
+        }
+
+        .stat-card.danger .icon {
+            color: var(--danger-color);
+        }
+
+        /* Table Styles */
+        .data-table {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background-color: #fff0c2;
+            color: #d97706;
+        }
+
+        .status-inprogress {
+            background-color: #c2e0ff;
+            color: #2563eb;
+        }
+
+        .status-resolved {
+            background-color: #c2f5d9;
+            color: #059669;
+        }
+
+        .status-rejected {
+            background-color: #ffd0d0;
+            color: #dc2626;
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* User Role Toggle */
+        .role-toggler {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        /* Admin Tools */
+        .admin-tools {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .sidebar.mobile-show {
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .mobile-header {
+                background-color: var(--primary-color);
+                padding: 15px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: sticky;
+                top: 0;
+                z-index: 998;
+                margin-bottom: 20px;
+            }
+            
+            .mobile-toggle {
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-comments logo-icon"></i>
+            <h3>Complaint Portal</h3>
+            <button class="toggle-sidebar" id="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt icon"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="my-complaints">
+                    <i class="fas fa-list-alt icon"></i>
+                    <span class="text">My Complaints</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-section="submit-complaint">
+                    <i class="fas fa-plus-circle icon"></i>
+                    <span class="text">Submit Complaint</span>
+                </a>
+            </li>
+            <li class="admin-only">
+                <a href="#" data-section="admin-analytics">
+                    <i class="fas fa-chart-bar icon"></i>
+                    <span class="text">Analytics</span>
+                </a>
+            </li>
+            <li class="admin-only">
+                <a href="#" data-section="admin-management">
+                    <i class="fas fa-tasks icon"></i>
+                    <span class="text">Complaint Management</span>
+                </a>
+            </li>
+            <li class="admin-only">
+                <a href="#" data-section="admin-settings">
+                    <i class="fas fa-cog icon"></i>
+                    <span class="text">Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-question-circle icon"></i>
+                    <span class="text">Help</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-sign-out-alt icon"></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Mobile Header (visible only on small screens) -->
+    <div class="mobile-header d-md-none">
+        <div class="mobile-logo">
+            <i class="fas fa-comments"></i> Complaint Portal
+        </div>
+        <div class="mobile-toggle" id="mobile-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Role Toggle (for demo purposes) -->
+        <div class="role-toggler">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="role-switch">
+                <label class="form-check-label" for="role-switch">Admin View</label>
+            </div>
+        </div>
+
+        <!-- Dashboard Header -->
+        <div class="dash-header d-flex justify-content-between align-items-center">
+            <h2>Dashboard</h2>
+            <div class="user-info">
+                <div class="user-avatar">JS</div>
+                <div>
+                    <div class="fw-bold">John Smith</div>
+                    <div class="text-muted small" id="user-role">Student</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Dashboard Content -->
+        <div id="student-dashboard">
+            <!-- Student Stats -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="stat-card primary">
+                        <div class="icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="count">5</div>
+                        <div class="title">Total Complaints</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card success">
+                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="count">3</div>
+                        <div class="title">Resolved</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card warning">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="count">2</div>
+                        <div class="title">Pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Complaints -->
+            <div class="data-table">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>My Recent Complaints</h4>
+                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#C1235</td>
+                                <td>Wi-Fi connectivity issues in Library</td>
+                                <td>IT Services</td>
+                                <td>May 3, 2025</td>
+                                <td><span class="status-badge status-inprogress">In Progress</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#C1228</td>
+                                <td>Broken chair in Room 201</td>
+                                <td>Facilities</td>
+                                <td>Apr 28, 2025</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#C1219</td>
+                                <td>Noisy construction during exam period</td>
+                                <td>Academic</td>
+                                <td>Apr 22, 2025</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#C1205</td>
+                                <td>Course registration system error</td>
+                                <td>IT Services</td>
+                                <td>Apr 15, 2025</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#C1187</td>
+                                <td>Request for extended library hours</td>
+                                <td>Facilities</td>
+                                <td>Apr 5, 2025</td>
+                                <td><span class="status-badge status-rejected">Rejected</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Resolution Timeline -->
+            <div class="chart-card">
+                <h4>Resolution Timeline</h4>
+                <div class="chart-container">
+                    <canvas id="studentTimelineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Content -->
+        <div id="admin-dashboard" style="display: none;">
+            <!-- Admin Stats -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card primary">
+                        <div class="icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="count">185</div>
+                        <div class="title">Total Complaints</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="count">142</div>
+                        <div class="title">Resolved</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card warning">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="count">32</div>
+                        <div class="title">In Progress</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card danger">
+                        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="count">11</div>
+                        <div class="title">Urgent</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Charts -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <h4>Complaints by Category</h4>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <h4>Resolution Rate (Last 6 Months)</h4>
+                        <div class="chart-container">
+                            <canvas id="resolutionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Complaints with Bulk Actions -->
+            <div class="admin-tools mb-3">
+                <h4>Bulk Actions</h4>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="input-group mb-3">
+                            <select class="form-select" id="bulkAction">
+                                <option selected>Choose action...</option>
+                                <option value="1">Mark as In Progress</option>
+                                <option value="2">Mark as Resolved</option>
+                                <option value="3">Assign to Department</option>
+                                <option value="4">Export Selected</option>
+                            </select>
+                            <button class="btn btn-primary" type="button" id="applyBulkAction">Apply</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button class="btn btn-success" type="button"><i class="fas fa-file-export"></i> Export All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Complaints Table -->
+            <div class="data-table">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Recent Complaints</h4>
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search complaints...">
+                        <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                                <th>ID</th>
+                                <th>Student</th>
+                                <th>Subject</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input complaint-checkbox"></td>
+                                <td>#C1235</td>
+                                <td>John Smith</td>
+                                <td>Wi-Fi connectivity issues in Library</td>
+                                <td>IT Services</td>
+                                <td>May 3, 2025</td>
+                                <td><span class="status-badge status-inprogress">In Progress</span></td>
+                                <td><span class="badge bg-warning">Medium</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Assign</a></li>
+                                            <li><a class="dropdown-item" href="#">Mark Resolved</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input complaint-checkbox"></td>
+                                <td>#C1234</td>
+                                <td>Emma Johnson</td>
+                                <td>Heating not working in Dorm Block C</td>
+                                <td>Facilities</td>
+                                <td>May 2, 2025</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td><span class="badge bg-danger">High</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Assign</a></li>
+                                            <li><a class="dropdown-item" href="#">Mark Resolved</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input complaint-checkbox"></td>
+                                <td>#C1233</td>
+                                <td>Miguel Sanchez</td>
+                                <td>Incorrect grade recorded for MATH201</td>
+                                <td>Academic</td>
+                                <td>May 1, 2025</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td><span class="badge bg-danger">High</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Assign</a></li>
+                                            <li><a class="dropdown-item" href="#">Mark Resolved</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input complaint-checkbox"></td>
+                                <td>#C1232</td>
+                                <td>Sarah Williams</td>
+                                <td>Vending machine not dispensing products but charging card</td>
+                                <td>Facilities</td>
+                                <td>Apr 30, 2025</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td><span class="badge bg-success">Low</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Assign</a></li>
+                                            <li><a class="dropdown-item" href="#">Mark Resolved</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input complaint-checkbox"></td>
+                                <td>#C1231</td>
+                                <td>Alex Turner</td>
+                                <td>Request for more vegetarian options in cafeteria</td>
+                                <td>Dining Services</td>
+                                <td>Apr 29, 2025</td>
+                                <td><span class="status-badge status-inprogress">In Progress</span></td>
+                                <td><span class="badge bg-warning">Medium</span></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Assign</a></li>
+                                            <li><a class="dropdown-item" href="#">Mark Resolved</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Resolution Tools -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="admin-tools">
+                        <h4>Resolution Tools</h4>
+                        <div class="mb-3">
+                            <label for="templateSelect" class="form-label">Response Templates</label>
+                            <select class="form-select" id="templateSelect">
+                                <option selected>Select a template...</option>
+                                <option value="1">IT Issue Acknowledgement</option>
+                                <option value="2">Facilities Follow-up</option>
+                                <option value="3">Resolution Confirmation</option>
+                                <option value="4">Additional Information Request</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="departmentSelect" class="form-label">Assign to Department</label>
+                            <select class="form-select" id="departmentSelect">
+                                <option selected>Select a department...</option>
+                                <option value="1">IT Services</option>
+                                <option value="2">Facilities Management</option>
+                                

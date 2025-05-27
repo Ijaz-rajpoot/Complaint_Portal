@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Complaint Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            min-height: 100vh;
+            color: white;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 2px 0;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stats-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stats-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .filter-card,
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .filter-card {
+            padding: 1.5rem;
+        }
+
+        .table-card .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .priority-high {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            background-color: #e8f5e8;
+            color: var(--success-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-open {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-in-progress {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-resolved {
+            background-color: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .status-closed {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-assign {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            border: none;
+            color: white;
+        }
+
+        .btn-assign:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .table {
+            border-radius: 0 0 15px 15px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background-color: rgba(52, 152, 219, 0.1);
+            border: none;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .table td {
+            border: none;
+            vertical-align: middle;
+            padding: 1rem 0.75rem;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 p-0">
+                <div class="sidebar p-3">
+                    <div class="text-center mb-4">
+                        <h4><i class="fas fa-shield-alt"></i> Admin Panel</h4>
+                        <hr class="text-white">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#complaints">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Complaints
+                        </a>
+                        <a class="nav-link" href="#staff">
+                            <i class="fas fa-users me-2"></i> Staff Management
+                        </a>
+                        <a class="nav-link" href="#analytics">
+                            <i class="fas fa-chart-bar me-2"></i> Analytics
+                        </a>
+                        <a class="nav-link" href="#reports">
+                            <i class="fas fa-file-alt me-2"></i> Reports
+                        </a>
+                        <a class="nav-link" href="#settings">
+                            <i class="fas fa-cog me-2"></i> Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <div class="main-content">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="mb-0">Complaint Management Dashboard</h2>
+                            <p class="text-muted mb-0">Monitor and manage all complaints efficiently</p>
+                        </div>
+                        <div>
+                            <span class="text-muted">Last updated: <span id="lastUpdated"></span></span>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stats-card fade-in">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="stats-number text-primary" id="totalComplaints">247</h3>
+                                        <p class="mb-0 text-muted">Total Complaints</p>
+                                    </div>
+                                    <i class="fas fa-clipboard-list fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card success fade-in">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="stats-number text-success" id="resolvedComplaints">189</h3>
+                                        <p class="mb-0 text-muted">Resolved</p>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card warning fade-in">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="stats-number text-warning" id="pendingComplaints">43</h3>
+                                        <p class="mb-0 text-muted">Pending</p>
+                                    </div>
+                                    <i class="fas fa-clock fa-2x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card danger fade-in">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="stats-number text-danger" id="urgentComplaints">15</h3>
+                                        <p class="mb-0 text-muted">High Priority</p>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Charts -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="chart-container">
+                                <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>Resolution Time Trends</h5>
+                                <canvas id="resolutionChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="chart-container">
+                                <h5 class="mb-3"><i class="fas fa-chart-pie me-2"></i>Status Distribution</h5>
+                                <canvas id="statusChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filter-card">
+                        <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Complaints</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" id="priorityFilter">
+                                    <option value="">All Priorities</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Assigned Staff</label>
+                                <select class="form-select" id="staffFilter">
+                                    <option value="">All Staff</option>
+                                    <option value="john-doe">John Doe</option>
+                                    <option value="jane-smith">Jane Smith</option>
+                                    <option value="mike-johnson">Mike Johnson</option>
+                                    <option value="unassigned">Unassigned</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control search-box" id="searchInput" placeholder="Search complaints...">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Date Range</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="date" class="form-control" id="dateFrom">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="date" class="form-control" id="dateTo">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button class="btn btn-primary btn-custom me-2" onclick="applyFilters()">
+                                    <i class="fas fa-search me-1"></i>Apply Filters
+                                </button>
+                                <button class="btn btn-outline-secondary btn-custom" onclick="clearFilters()">
+                                    <i class="fas fa-redo me-1"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Complaint Management</h5>
+                                <div>
+                                    <button class="btn btn-light btn-sm me-2" onclick="exportData()">
+                                        <i class="fas fa-download me-1"></i>Export
+                                    </button>
+                                    <button class="btn btn-light btn-sm" onclick="refreshData()">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="complaintsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Subject</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Assigned To</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complaintsTableBody">
+                                    <!-- Table rows will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-3">
+                            <span class="text-muted">Showing <span id="showingCount">1-10</span> of <span id="totalCount">247</span> complaints</span>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Modal -->
+    <div class="modal fade" id="assignModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Assign Complaint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Complaint ID</label>
+                        <input type="text" class="form-control" id="assignComplaintId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assign to Staff Member</label>
+                        <select class="form-select" id="assignStaffSelect">
+                            <option value="">Select Staff Member</option>
+                            <option value="john-doe">John Doe - Technical Support</option>
+                            <option value="jane-smith">Jane Smith - Customer Service</option>
+                            <option value="mike-johnson">Mike Johnson - Billing Department</option>
+                            <option value="sarah-wilson">Sarah Wilson - Quality Assurance</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Priority Level</label>
+                        <select class="form-select" id="assignPrioritySelect">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="assignNotes" rows="3" placeholder="Add assignment notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmAssignment()">Assign Complaint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Sample data - In Django, this would come from your backend
+        let complaintsData = [
+            {id: 'C001', subject: 'Payment Processing Issue', customer: 'John Smith', status: 'open', priority: 'high', assignedTo: '', created: '2024-01-15'},
+            {id: 'C002', subject: 'Login Problems', customer: 'Sarah Johnson', status: 'in-progress', priority: 'medium', assignedTo: 'john-doe', created: '2024-01-14'},
+            {id: 'C003', subject: 'Product Defect', customer: 'Mike Wilson', status: 'resolved', priority: 'high', assignedTo: 'jane-smith', created: '2024-01-13'},
+            {id: 'C004', subject: 'Billing Inquiry', customer: 'Emily Davis', status: 'open', priority: 'low', assignedTo: '', created: '2024-01-12'},
+            {id: 'C005', subject: 'Service Outage', customer: 'David Brown', status: 'closed', priority: 'high', assignedTo: 'mike-johnson', created: '2024-01-11'},
+            {id: 'C006', subject: 'Account Access', customer: 'Lisa Anderson', status: 'in-progress', priority: 'medium', assignedTo: 'john-doe', created: '2024-01-10'},
+            {id: 'C007', subject: 'Feature Request', customer: 'Tom Miller', status: 'open', priority: 'low', assignedTo: '', created: '2024-01-09'},
+            {id: 'C008', subject: 'Data Sync Issue', customer: 'Amy Taylor', status: 'resolved', priority: 'medium', assignedTo: 'jane-smith', created: '2024-01-08'}
+        ];
+
+        let filteredData = [...complaintsData];
+
+        // Staff mapping
+        const staffMap = {
+            'john-doe': 'John Doe',
+            'jane-smith': 'Jane Smith',
+            'mike-johnson': 'Mike Johnson',
+            'sarah-wilson': 'Sarah Wilson'
+        };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLastUpdated();
+            initializeCharts();
+            renderComplaintsTable();
+            updateStatistics();
+        });
+
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString();
+        }
+
+        function initializeCharts() {
+            // Resolution Time Chart
+            const ctx1 = document.getElementById('resolutionChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Avg Resolution Time (hours)',
+                        data: [24, 19, 16, 22, 18, 15],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Status Distribution Chart
+            const ctx2 = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+                    datasets: [{
+                        data: [43, 35, 189, 25],
+                        backgroundColor: [
+                            '#3498db',
+                            '#f39c12',
+                            '#27ae60',
+                            '#9b59b6'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderComplaintsTable() {
+            const tbody = document.getElementById('complaintsTableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach(complaint => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${complaint.id}</strong></td>
+                    <td>${complaint.subject}</td>
+                    <td>${complaint.customer}</td>
+                    <td><span class="status-badge status-${complaint.status}">${formatStatus(complaint.status)}</span></td>
+                    <td><span class="priority-${complaint.priority}">${complaint.priority.toUpperCase()}</span></td>
+                    <td>${complaint.assignedTo ? staffMap[complaint.assignedTo] : '<span class="text-muted">Unassigned</span>'}</td>
+                    <td>${formatDate(complaint.created)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-assign btn-custom me-1" onclick="openAssignModal('${complaint.id}')">
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary btn-custom me-1" onclick="viewComplaint('${complaint.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success btn-custom" onclick="updateStatus('${complaint.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updatePagination();
+        }
+
+        function formatStatus(status) {
+            return status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function updateStatistics() {
+            const total = complaintsData.length;
+            const resolved = complaintsData.filter(c => c.status === 'resolved').length;
+            const pending = complaintsData.filter(c => c.status === 'open' || c.status === 'in-progress').length;
+            const urgent = complaintsData.filter(c => c.priority === 'high').length;
+
+            document.getElementById('totalComplaints').textContent = total;
+            document.getElementById('resolvedComplaints').textContent = resolved;
+            document.getElementById('pendingComplaints').textContent = pending;
+            document.getElementById('urgentComplaints').textContent = urgent;
+        }
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const staffFilter = document.getElementById('staffFilter').value;
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            filteredData = complaintsData.filter(complaint => {
+                const matchesStatus = !statusFilter || complaint.status === statusFilter;
+                const matchesPriority = !priorityFilter || complaint.priority === priorityFilter;
+                const matchesStaff = !staffFilter || 
+                    (staffFilter === 'unassigned' ? !complaint.assignedTo : complaint.assignedTo === staffFilter);
+                const matchesSearch = !searchInput || 
+                    complaint.subject.toLowerCase().includes(searchInput) ||
+                    complaint.customer.toLowerCase().includes(searchInput) ||
+                    complaint.id.toLowerCase().includes(searchInput);
+                const matchesDateFrom = !dateFrom || new Date(complaint.created) >= new Date(dateFrom);
+                const matchesDateTo = !dateTo || new Date(complaint.created) <= new Date(dateTo);
+
+                return matchesStatus && matchesPriority && matchesStaff && matchesSearch && matchesDateFrom && matchesDateTo;
+            });
+
+            renderComplaintsTable();
+            showNotification('Filters applied successfully', 'success');
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('staffFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            
+            filteredData = [...complaintsData];
+            renderComplaintsTable();
+            showNotification('Filters cleared', 'info');
+        }
+
+        function openAssignModal(complaintId) {
+            document.getElementById('assignComplaintId').value = complaintId;
+            const complaint = complaintsData.find(c => c.id === complaintId);
+            if (complaint) {
+                document.getElementById('assignPrioritySelect').value = complaint.priority;
+                

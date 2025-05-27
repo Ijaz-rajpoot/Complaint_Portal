@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - University Complaint Portal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Header Styling */
+        .contact-header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Card styling */
+        .contact-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        /* Form styling */
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Department cards */
+        .department-card {
+            background-color: white;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .department-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .department-card h5 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .department-card p {
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        
+        .department-academic { border-left-color: #0078d4; }
+        .department-admin { border-left-color: #4caf50; }
+        .department-technical { border-left-color: #ff9800; }
+        .department-housing { border-left-color: #9c27b0; }
+        .department-health { border-left-color: #e91e63; }
+        
+        /* Map container */
+        .map-container {
+            height: 450px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Social media links */
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+            background-color: #0056b3;
+        }
+        
+        /* FAQ section */
+        .faq-link {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-link:hover {
+            background-color: #dde2e6;
+            transform: translateY(-3px);
+        }
+        
+        .faq-link i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .contact-header {
+                padding: 40px 0;
+            }
+            
+            .map-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Contact Header Section -->
+    <header class="contact-header">
+        <div class="container">
+            <h1><i class="fas fa-envelope me-2"></i>Contact Us</h1>
+            <p class="lead">Get in touch with our support team or find the right department for your needs</p>
+        </div>
+    </header>
+
+    <div class="container mb-5">
+        <div class="row mb-5">
+            <!-- Quick Contact Cards -->
+            <div class="col-md-4 mb-4">
+                <div class="contact-card p-4 text-center">
+                    <div class="card-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Call Us</h3>
+                    <p class="text-muted">We're available Mon-Fri, 8am-6pm</p>
+                    <p class="fs-5 fw-bold">Main: (555) 123-4567</p>
+                    <p>Support: (555) 987-6543</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="contact-card p-4 text-center">
+                    <div class="card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Us</h3>
+                    <p class="text-muted">We'll respond within 24 hours</p>
+                    <p class="fs-5 fw-bold">support@university.edu</p>
+                    <p>For urgent matters: urgent@university.edu</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="contact-card p-4 text-center">
+                    <div class="card-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Visit Us</h3>
+                    <p class="text-muted">Student Services Building, Room 203</p>
+                    <p class="fs-5 fw-bold">123 University Avenue</p>
+                    <p>College Town, CT 12345</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-7 mb-5">
+                <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm">
+                    <h2 class="mb-4">Send us a Message</h2>
+                    <form id="contactForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number (Optional)</label>
+                            <input type="tel" class="form-control" id="phone">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" required>
+                                <option value="" selected disabled>Select a department</option>
+                                <option value="academic">Academic Affairs</option>
+                                <option value="admin">Administrative Services</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="housing">Housing & Dining</option>
+                                <option value="health">Health & Wellness</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="copyEmail">
+                            <label class="form-check-label" for="copyEmail">Send me a copy of this message</label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-submit">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Department Contacts -->
+            <div class="col-lg-5">
+                <h2 class="mb-4">Department Contacts</h2>
+                
+                <div class="department-card department-academic">
+                    <h5><i class="fas fa-book me-2"></i> Academic Affairs</h5>
+                    <p><strong>Email:</strong> academic@university.edu</p>
+                    <p><strong>Phone:</strong> (555) 123-4001</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 9am-5pm</p>
+                </div>
+                
+                <div class="department-card department-admin">
+                    <h5><i class="fas fa-building me-2"></i> Administrative Services</h5>
+                    <p><strong>Email:</strong> admin@university.edu</p>
+                    <p><strong>Phone:</strong> (555) 123-4002</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 8am-4:30pm</p>
+                </div>
+                
+                <div class="department-card department-technical">
+                    <h5><i class="fas fa-laptop me-2"></i> Technical Support</h5>
+                    <p><strong>Email:</strong> helpdesk@university.edu</p>
+                    <p><strong>Phone:</strong> (555) 123-4003</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 8am-8pm; Sat, 10am-2pm</p>
+                </div>
+                
+                <div class="department-card department-housing">
+                    <h5><i class="fas fa-home me-2"></i> Housing & Dining</h5>
+                    <p><strong>Email:</strong> housing@university.edu</p>
+                    <p><strong>Phone:</strong> (555) 123-4004</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 8am-6pm</p>
+                </div>
+                
+                <div class="department-card department-health">
+                    <h5><i class="fas fa-heartbeat me-2"></i> Health & Wellness</h5>
+                    <p><strong>Email:</strong> health@university.edu</p>
+                    <p><strong>Phone:</strong> (555) 123-4005</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 8am-6pm; Emergency: 24/7</p>
+                </div>
+                
+                <!-- Social Media Links -->
+                <div class="social-links">
+                    <h5 class="mb-3">Connect With Us</h5>
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="mb-4">Find Us</h2>
+                <div class="map-container">
+                    <!-- Placeholder for the map -->
+                    <img src="/api/placeholder/1200/450" alt="University Location Map" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="text-center mt-3">
+                    <p><i class="fas fa-map-marker-alt me-2 text-danger"></i> 123 University Avenue, College Town, CT 12345</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Link -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="faq-link">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>Still have questions?</h3>
+                    <p class="mb-4">Check our frequently asked questions for quick answers to common inquiries.</p>
+                    <a href="faq.html" class="btn btn-primary">Visit FAQ Page</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>University Complaint Portal</h4>
+                    <p>A centralized platform to address your concerns and feedback efficiently.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light">Home</a></li>
+                        <li><a href="submit-complaint.html" class="text-light">Submit Complaint</a></li>
+                        <li><a href="faq.html" class="text-light">FAQ</a></li>
+                        <li><a href="contact.html" class="text-light">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Privacy Policy</a></li>
+                        <li><a href="#" class="text-light">Terms of Use</a></li>
+                        <li><a href="#" class="text-light">Accessibility</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-3 mb-3 bg-secondary">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 University Complaint Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Form validation and submission script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    // Basic form validation
+                    const firstName = document.getElementById('firstName').value.trim();
+                    const lastName = document.getElementById('lastName').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const department = document.getElementById('department').value;
+                    const subject = document.getElementById('subject').value.trim();
+                    const message = document.getElementById('message').value.trim();
+                    
+                    if (!firstName || !lastName || !email || !department || !subject || !message) {
+                        alert('Please fill out all required fields.');
+                        return;
+                    }
+                    
+                    // Email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+                    
+                    // For demo purposes, show a success message
+                    // In a real application, you would send this data to a server
+                    alert('Thank you for your message! We will get back to you shortly.');
+                    contactForm.reset();
+                });
+            }
+            
+            // Add animation to elements when they come into view
+            const animateElements = document.querySelectorAll('.contact-card, .department-card');
+            
+            function checkIfInView() {
+                animateElements.forEach(element => {
+                    const rect = element.getBoundingClientRect();
+                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                    
+                    if (rect.top <= windowHeight * 0.85 && rect.bottom >= 0) {
+                        element.classList.add('fade-in');
+                    }
+                });
+            }
+            
+            // Initial check on page load
+            checkIfInView();
+            
+            // Check when scrolling
+            window.addEventListener('scroll', checkIfInView);
+        });
+    </script>
+</body>
+</html>

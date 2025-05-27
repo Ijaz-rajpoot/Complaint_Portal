@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint System - FAQ & Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0b5ed7;
+            --secondary: #6c757d;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .faq-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 3rem 0;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .faq-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary);
+        }
+        
+        .contact-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            background-color: white;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-icon {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(13, 110, 253, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .login-container {
+            max-width: 450px;
+            margin: 2rem auto;
+        }
+        
+        .login-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .login-body {
+            padding: 2rem;
+        }
+        
+        .dashboard-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+        }
+        
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+        }
+        
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .page-section {
+            margin-bottom: 3rem;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--secondary);
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background-color: transparent;
+        }
+        
+        .student-dashboard {
+            display: none;
+        }
+        
+        .admin-dashboard {
+            display: none;
+        }
+        
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .form-outline {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-outline input {
+            border-radius: 0;
+            border: 0;
+            border-bottom: 1px solid #ced4da;
+            padding: 0.75rem 0.25rem;
+            background-color: transparent;
+        }
+        
+        .form-outline input:focus {
+            box-shadow: none;
+            border-color: var(--primary);
+        }
+        
+        .form-outline label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0.75rem 0.25rem;
+            transition: all 0.2s ease-out;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .form-outline input:focus ~ label,
+        .form-outline input:not(:placeholder-shown) ~ label {
+            transform: translateY(-1.5rem) scale(0.85);
+            opacity: 1;
+            color: var(--primary);
+        }
+        
+        .page-content {
+            display: none;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        #chartContainer {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-clipboard-check me-2"></i>Complaint System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="faq">FAQ / Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="login">Login</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto d-none" id="userNavMenu">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> <span id="username">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div class="page-content active" id="home">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-8 mx-auto text-center">
+                    <h1 class="display-4 mb-4">University Complaint Management System</h1>
+                    <p class="lead mb-5">A streamlined platform for students and staff to submit, track, and resolve complaints effectively.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="btn btn-primary btn-lg" data-page="login">Login to Dashboard</a>
+                        <a href="#" class="btn btn-outline-primary btn-lg" data-page="faq">View Help Center</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5 pt-5">
+                <div class="col-md-4">
+                    <div class="card h-100 faq-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-file-alt fa-3x text-primary"></i>
+                            </div>
+                            <h4>Submit Complaints</h4>
+                            <p class="text-muted">Easily submit your complaints with our user-friendly form and get instant confirmation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 faq-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-search fa-3x text-primary"></i>
+                            </div>
+                            <h4>Track Progress</h4>
+                            <p class="text-muted">Monitor the status of your complaints in real-time with our comprehensive tracking system.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 faq-card">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-check-circle fa-3x text-primary"></i>
+                            </div>
+                            <h4>Quick Resolution</h4>
+                            <p class="text-muted">Get timely resolution for your issues with our efficient complaint handling process.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ / Help Center -->
+    <div class="page-content" id="faq">
+        <!-- FAQ Header -->
+        <div class="faq-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto text-center">
+                        <h1 class="display-4 mb-3">Help Center</h1>
+                        <p class="lead mb-4">Find answers to common questions about our complaint management system</p>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" placeholder="Search for answers...">
+                            <button class="btn btn-light" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="container page-section">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Frequently Asked Questions</h2>
+                    
+                    <div class="accordion" id="faqAccordion">
+                        <!-- FAQ Item 1 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    How do I submit a new complaint?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>To submit a new complaint, follow these simple steps:</p>
+                                    <ol>
+                                        <li>Log in to your student dashboard</li>
+                                        <li>Click on the "Submit New Complaint" button</li>
+                                        <li>Fill out the complaint form with all required details</li>
+                                        <li>Upload any supporting documents if needed</li>
+                                        <li>Click "Submit" to finalize your complaint</li>
+                                    </ol>
+                                    <p>You will receive a confirmation email with your complaint ID for future reference.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 2 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    How long does the complaint resolution process take?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>The resolution time depends on the nature and complexity of your complaint:</p>
+                                    <ul>
+                                        <li><strong>Simple inquiries:</strong> 1-3 business days</li>
+                                        <li><strong>Basic complaints:</strong> 3-5 business days</li>
+                                        <li><strong>Complex issues:</strong> 5-10 business days</li>
+                                        <li><strong>Severe cases:</strong> May take up to 15 business days</li>
+                                    </ul>
+                                    <p>We strive to resolve all complaints as quickly and efficiently as possible. You can always check the status of your complaint through your dashboard.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 3 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                    What information should I include in my complaint?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>To ensure your complaint is processed efficiently, please include:</p>
+                                    <ul>
+                                        <li>A clear and concise description of the issue</li>
+                                        <li>Date and time when the issue occurred</li>
+                                        <li>Names of any staff members or departments involved</li>
+                                        <li>Any reference numbers related to your issue</li>
+                                        <li>Supporting documents (screenshots, emails, etc.)</li>
+                                        <li>Your preferred resolution outcome</li>
+                                    </ul>
+                                    <p>The more specific information you provide, the faster we can resolve your complaint.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 4 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                    Can I update my complaint after submission?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Yes, you can update your complaint after submission as long as it hasn't moved to the "Under Review" status:</p>
+                                    <ol>
+                                        <li>Log in to your dashboard</li>
+                                        <li>Find your complaint in the "My Complaints" section</li>
+                                        <li>Click on the "Edit" button</li>
+                                        <li>Make your necessary changes</li>
+                                        <li>Click "Save Changes"</li>
+                                    </ol>
+                                    <p>Once your complaint moves to "Under Review," you can only add comments or attachments through the discussion thread, but cannot edit the original complaint details.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 5 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                    What if I'm not satisfied with the resolution?
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>If you're not satisfied with the resolution provided:</p>
+                                    <ol>
+                                        <li>Go to your resolved complaint in the dashboard</li>
+                                        <li>Click on the "Appeal Resolution" button</li>
+                                        <li>Provide your reasons for appealing</li>
+                                        <li>Submit the appeal for review</li>
+                                    </ol>
+                                    <p>Your appeal will be escalated to a senior administrator, who will review your case within 5 business days. You can only appeal once per complaint.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 6 -->
+                        <div class="accordion-item faq-card">
+                            <h2 class="accordion-header" id="headingSix">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                                    How do I track the status of my complaint?
+                                </button>
+                            </h2>
+                            <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Tracking your complaint is easy:</p>
+                                    <ol>
+                                        <li>Log in to your student dashboard</li>
+                                        <li>Go to the "My Complaints" section</li>
+                                        <li>Find your complaint in the list</li>
+                                        <li>Click on it to view detailed status information</li>
+                                    </ol>
+                                    <p>You'll also receive email notifications whenever there's an update to your complaint status.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <h3>Still have questions?</h3>
+                        <p>If you couldn't find the answer you're looking for, feel free to contact our support team.</p>
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <i class="fas fa-envelope me-2"></i>Contact Support
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="contact-card">
+                        <h3 class="mb-4">Contact Information</h3>
+                        
+                        <div class="contact-info">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Email Support</h5>
+                                <p class="mb-0">support@university.edu</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Phone Support</h5>
+                                <p class="mb-0">(555) 123-4567</p>
+                                <small class="text-muted">Mon-Fri, 8:00 AM - 6:00 PM</small>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Visit Us</h5>
+                                <p class="mb-0">Student Services Building<br>Room 203, Main Campus</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info">
+                            <div class="contact-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">Live Chat</h5>
+                                <p class="mb-0">Chat with our support team in real-time</p>
+                                <button class="btn btn-sm btn-outline-primary mt-2">Start Chat</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card faq-card mt-4">
+                        <div class="card-body">
+                            <h4 class="card-title">Quick Resources</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-transparent border-bottom">
+                                    <a href="#" class="text-decoration-none d-flex align-items-center">
+                                        <i class="fas fa-file-pdf me-3 text-danger"></i>
+                                        Complaint Policy Document
+                                    </a>
+                                </li>
+                                <li class="list-group-item bg-transparent border-bottom">
+                                    <a href="#" class="text-decoration-none d-flex align-items-center">
+                                        <i class="fas fa-video me-3 text-primary"></i>
+                                        Video Tutorial: Submitting a Complaint
+                                    </a>
+                                </li>
+                                <li class="list-group-item bg-transparent border-bottom">
+                                    <a href="#" class="text-decoration-none d-flex align-items-center">
+                                        <i class="fas fa-book me-3 text-success"></i>
+                                        Student Handbook
+                                    </a>
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <a href="#" class="text-decoration-none d-flex align-items-center">
+                                        <i class="fas fa-question-circle me-3 text-warning"></i>
+                                        Troubleshooting Guide
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page-content" id="login">
+        <div class="container">
+            <div class="login-container">
+                <div class="card login-card">
+                    <div class="login-header">
+                        <h2><i class="fas fa-lock me-2"></i>Login</h2>
+                        <p>Access your complaint dashboard</p>
+                    </div>
+                    <div class="login-body">
+                        <form id="loginForm">
+                            <div class="form-outline">
+                                <input type="text" id="loginUsername" class="form-control" placeholder=" " required>
+                                <label for="loginUsername">Username or Email</label>
+                            </div>
+                            
+                            <div class="form-outline">
+                                <input type="password" id="loginPassword" class="form-control" placeholder=" " required>
+                                <label for="loginPassword">Password</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                <a href="#" class="float-end">Forgot password?</a>
+                            </div>
+                            
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                            </div>
+                            
+                            <div class="form-text text-center">
+                                Don't have an account? <a href="#">Register here</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div class="page-content" id="student-dashboard">
+        <div class="container mt-4">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2>Student Dashboard</h2>
+                    <p class="text-muted">Welcome back, <span class="fw-bold" id="studentName">Student</span></p>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newComplaintModal">
+                        <i class="fas fa-plus me-2"></i>New Complaint
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Complaints</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="fas fa-clipboard-list text-primary"></i>
+                                </div>
+                                <h3 class="mb-0">7</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h5 class="card-title">In Progress</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="fas fa-spinner text-warning"></i>
+                                </div>
+                                <h3 class="mb-0">2</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resolved</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="fas fa-check-circle text-success"></i>
+                                </div>
+                                <h3 class="mb-0">4</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Avg. Resolution Time</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="fas fa-clock text-info"></i>
+                                </div>
+                                <h3 class="mb-0">3.5 days</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">My Complaints</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">All (7)</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button">Active (3)</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="resolved-tab" data-bs-toggle="tab" data-bs-target

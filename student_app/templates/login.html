@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Login</h2>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form id="loginForm" method="POST" action="{% url 'student_app:login' %}">
+
+    {% csrf_token %}
+    <div>
+        <label>Username</label>
+        <input type="text" name="username" required>
+    </div>
+    <div>
+        <label>Password</label>
+        <input type="password" name="password" required>
+    </div>
+    <button type="submit">Login</button>
+</form>
+
+<a href="{% url 'student_app:chat_support' %}" class="btn btn-primary">Chat Support</a>
+{% endblock %}

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Complaint Portal - Submit Complaint</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f3f4f6;
+            --dark-color: #111827;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s;
+            z-index: 999;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-header .logo-icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-menu {
+            padding: 0;
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu .icon {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu .text {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .text,
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-menu a {
+            padding: 15px 20px;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-menu .icon {
+            margin-right: 0;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            margin-left: auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Form Styles */
+        .complaint-form {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .required::after {
+            content: "*";
+            color: var(--danger-color);
+            margin-left: 3px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+        }
+
+        /* File Upload Styles */
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            background-color: #f8f9fa;
+            border-color: var(--secondary-color);
+        }
+
+        .file-upload-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+
+        .file-item .file-name {
+            flex-grow: 1;
+            margin-left: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-item .file-remove {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* Toggle Switch Styles */
+        .submission-toggle {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .toggle-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        /* Form Controls */
+        .form-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        /* Submission Message */
+        .submission-message {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .submission-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .submission-error {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        /* Category Tag Pills */
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            border-radius: 20px;
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-tag:hover {
+            background-color: #dee2e6;
+        }
+
+        .category-tag.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .sidebar.mobile-show {
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .mobile-header {
+                background-color: var(--primary-color);
+                padding: 15px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: sticky;
+                top: 0;
+                z-index: 998;
+                margin-bottom: 20px;
+            }
+
+            .mobile-toggle {
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+            .form-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .form-controls button {
+                width: 100%;
+            }
+        }
+
+        /* Info Cards */
+        .info-card {
+            background-color: #e7f5ff;
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .info-card-text {
+            margin-bottom: 0;
+            color: #495057;
+        }
+
+        /* Form Steps */
+        .form-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .step::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: -50%;
+            height: 2px;
+            width: 100%;
+            background-color: #ced4da;
+            z-index: 0;
+        }
+
+        .step:first-child::before {
+            display: none;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ced4da;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-number {
+            background-color: var(--secondary-color);
+        }
+
+        .step.completed .step-number {
+            background-color: var(--success-color);
+        }
+
+        .step.completed::before {
+            background-color: var(--success-color);
+        }
+
+        .step.active .step-label {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-comments logo-icon"></i>
+            <h3>Complaint Portal</h3>
+            <button class="toggle-sidebar" id="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home icon"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="dashboard.html">
+                    <i class="fas fa-tachometer-alt icon"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="my-complaints.html">
+                    <i class="fas fa-list-alt icon"></i>
+                    <span class="text">My Complaints</span>
+                </a>
+            </li>
+            <li>
+                <a href="submit-complaint.html" class="active">
+                    <i class="fas fa-plus-circle icon"></i>
+                    <span class="text">Submit Complaint</span>
+                </a>
+            </li>
+            <li>
+                <a href="track-status.html">
+                    <i class="fas fa-search icon"></i>
+                    <span class="text">Track Status</span>
+                </a>
+            </li>
+            <li>
+                <a href="faq.html">
+                    <i class="fas fa-question-circle icon"></i>
+                    <span class="text">Help & FAQs</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-sign-out-alt icon"></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Mobile Header (visible only on small screens) -->
+    <div class="mobile-header d-md-none">
+        <div class="mobile-logo">
+            <i class="fas fa-comments"></i> Complaint Portal
+        </div>
+        <div class="mobile-toggle" id="mobile-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Page Header -->
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <h2>Submit a Complaint</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Submit Complaint</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card mb-4">
+            <div class="info-card-title">
+                <i class="fas fa-info-circle me-2"></i> Before You Submit
+            </div>
+            <p class="info-card-text">Please provide detailed information about your complaint to help us address it
+                efficiently. All fields marked with an asterisk (*) are required.</p>
+        </div>
+
+        <!-- Form Steps -->
+        <div class="form-steps d-none d-md-flex">
+            <div class="step active" id="step-1-indicator">
+                <div class="step-number">1</div>
+                <div class="step-label">Complaint Details</div>
+            </div>
+            <div class="step" id="step-2-indicator">
+                <div class="step-number">2</div>
+                <div class="step-label">Additional Information</div>
+            </div>
+            <div class="step" id="step-3-indicator">
+                <div class="step-number">3</div>
+                <div class="step-label">Review & Submit</div>
+            </div>
+        </div>
+
+        <!-- Submission Type Toggle -->
+        <div class="submission-toggle">
+            <div class="toggle-label">Submission Type</div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="anonymousToggle">
+                <label class="form-check-label" for="anonymousToggle">Submit Anonymously</label>
+            </div>
+            <p class="toggle-description">
+                <i class="fas fa-info-circle me-1"></i>
+                Anonymous submissions will not be linked to your account and you won't receive updates on the resolution
+                process.
+            </p>
+        </div>
+
+        <!-- Success/Error Message Area -->
+        <div id="successMessage" class="submission-message submission-success">
+            <h4><i class="fas fa-check-circle me-2"></i> Complaint Submitted Successfully!</h4>
+            <p class="mb-0">Your complaint has been received. You can track its status using the reference number
+                provided in your email.</p>
+        </div>
+
+        <div id="errorMessage" class="submission-message submission-error">
+            <h4><i class="fas fa-exclamation-circle me-2"></i> Submission Error</h4>
+            <p class="mb-0">There was an error submitting your complaint. Please try again or contact support if the
+                problem persists.</p>
+        </div>
+
+        <!-- Complaint Form -->
+        <form id="complaintForm" class="needs-validation" novalidate>
+            <!-- Step 1: Complaint Details -->
+            <div class="step-content active" id="step-1">
+                <div class="complaint-form">
+                    <div class="form-section">
+                        <div class="form-section-title">Complaint Details</div>
+
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label for="category" class="form-label required">Category</label>
+                            <div class="category-tags mb-2">
+                                <div class="category-tag" data-category="Academic">Academic</div>
+                                <div class="category-tag" data-category="IT Services">IT Services</div>
+                                <div class="category-tag" data-category="Facilities">Facilities</div>
+                                <div class="category-tag" data-category="Dining Services">Dining Services</div>
+                                <div class="category-tag" data-category="Housing">Housing</div>
+                                <div class="category-tag" data-category="Administration">Administration</div>
+                                <div class="category-tag" data-category="Other">Other</div>
+                            </div>
+                            <select class="form-select" id="category" required>
+                                <option value="" selected disabled>Select a category...</option>
+                                <option value="Academic">Academic</option>
+                                <option value="IT Services">IT Services</option>
+                                <option value="Facilities">Facilities</option>
+                                <option value="Dining Services">Dining Services</option>
+                                <option value="Housing">Housing</option>
+                                <option value="Administration">Administration</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a category.
+                            </div>
+                        </div>
+
+                        <!-- Subcategory -->
+                        <div class="mb-4" id="subcategoryContainer" style="display: none;">
+                            <label for="subcategory" class="form-label required">Subcategory</label>
+                            <select class="form-select" id="subcategory">
+                                <option value="" selected disabled>Select a subcategory...</option>
+                                <!-- Subcategories will be populated dynamically based on selected category -->
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a subcategory.
+                            </div>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="mb-4">
+                            <label for="subject" class="form-label required">Subject</label>
+                            <input type="text" class="form-control" id="subject"
+                                placeholder="Brief title of your complaint" required>
+                            <div class="invalid-feedback">
+                                Please provide a subject for your complaint.
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label required">Description</label>
+                            <textarea class="form-control" id="description" rows="6"
+                                placeholder="Please provide detailed information about your complaint..."
+                                required></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Include relevant details such as when and where the issue occurred, who was involved,
+                                and any previous attempts to resolve it.
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide a description of your complaint.
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location"
+                                placeholder="Where did this issue occur?">
+                        </div>
+                    </div>
+
+                    <div class="form-controls">
+                        <button type="button" class="btn btn-outline-secondary">Cancel</button>
+                        <button type="button" class="btn btn-primary next-step" data-step="1">Next <i
+                                class="fas fa-arrow-right ms-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Additional Information -->
+            <div class="step-content" id="step-2">
+                <div class="complaint-form">
+                    <div class="form-section">
+                        <div class="form-section-title">Additional Information</div>
+
+                        <!-- Date of Occurrence -->
+                        <div class="mb-4">
+                            <label for="occurrenceDate" class="form-label">Date of Occurrence</label>
+                            <input type="date" class="form-control" id="occurrenceDate">
+                            <div class="form-text">When did this issue occur? Leave blank if ongoing or not applicable.
+                            </div>
+                        </div>
+
+                        <!-- Urgency Level -->
+                        <div class="mb-4">
+                            <label for="urgency" class="form-label">Urgency Level</label>
+                            <select class="form-select" id="urgency">
+                                <option value="Low">Low - Can be addressed when convenient</option>
+                                <option value="Medium" selected>Medium - Requires attention but not urgent</option>
+                                <option value="High">High - Needs prompt attention</option>
+                                <option value="Critical">Critical - Requires immediate action</option>
+                            </select>
+                        </div>
+
+                        <!-- Impact -->
+                        <div class="mb-4">
+                            <label for="impact" class="form-label">Who is impacted?</label>
+                            <select class="form-select" id="impact">
+                                <option value="Just me" selected>Just me</option>
+                                <option value="Small group">Small group (2-10 people)</option>
+                                <option value="Large group">Large group (more than 10 people)</option>
+                                <option value="Everyone">Everyone in the university</option>
+                            </select>
+                        </div>
+
+                        <!-- Attachment Upload -->
+                        <div class="mb-4">
+                            <label class="form-label">Attachments (Optional)</label>
+                            <div class="file-upload">
+                                <label for="fileInput" class="file-upload-area">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="file-upload-text">
+                                        <strong>Click to upload</strong> or drag and drop
+                                    </div>
+                                    <div class="file-upload-hint text-muted">
+                                        (PDF, JPG, PNG, DOC - Max 5MB each)
+                                    </div>
+                                </label>
+                                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                <ul class="file-list" id="fileList"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Additional Comments -->
+                        <div class="mb-4">
+                            <label for="additionalComments" class="form-label">Additional Comments</label>
+                            <textarea class="form-control" id="additionalComments" rows="4"
+                                placeholder="Any other information you'd like to share..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-controls">
+                        <button type="button" class="btn btn-outline-secondary prev-step" data-step="2"><i
+                                class="fas fa-arrow-left me-1"></i> Previous</button>
+                        <button type="button" class="btn btn-primary next-step" data-step="2">Review <i
+                                class="fas fa-arrow-right ms-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Review & Submit -->
+            <div class="step-content" id="step-3">
+                <div class="complaint-form">
+                    <div class="form-section">
+                        <div class="form-section-title">Review Your Complaint</div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Please review your complaint details before submission. You can go back to make any changes
+                            if needed.
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <strong>Complaint Summary</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Submission Type:</div>
+                                    <div class="col-md-8" id="review-submission-type">Registered</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Category:</div>
+                                    <div class="col-md-8" id="review-category"></div>
+                                </div>
+                                <div class="row mb-3" id="review-subcategory-row" style="display: none;">
+                                    <div class="col-md-4 fw-bold">Subcategory:</div>
+                                    <div class="col-md-8" id="review-subcategory"></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Subject:</div>
+                                    <div class="col-md-8" id="review-subject"></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Description:</div>
+                                    <div class="col-md-8" id="review-description"></div>
+                                </div>
+                                <div class="row mb-3" id="review-location-row" style="display: none;">
+                                    <div class="col-md-4 fw-bold">Location:</div>
+                                    <div class="col-md-8" id="review-location"></div>
+                                </div>
+                                <div class="row mb-3" id="review-date-row" style="display: none;">
+                                    <div class="col-md-4 fw-bold">Date of Occurrence:</div>
+                                    <div class="col-md-8" id="review-date"></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Urgency Level:</div>
+                                    <div class="col-md-8" id="review-urgency"></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Impact:</div>
+                                    <div class="col-md-8" id="review-impact"></div>
+                                </div>
+                                <div class="row mb-3" id="review-attachments-row" style="display: none;">
+                                    <div class="col-md-4 fw-bold">Attachments:</div>
+                                    <div class="col-md-8" id="review-attachments"></div>
+                                </div>
+                                <div class="row mb-3" id="review-comments-row" style="display: none;">
+                                    <div class="col-md-4 fw-bold">Additional Comments:</div>
+                                    <div class="col-md-8" id="review-comments"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Consent -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="termsConsent" required>
+                                <label class="form-check-label" for="termsConsent">
+                                    I confirm that the information provided is accurate and complete.
+                                </label>
+                                <div class="invalid-feedback">
+                                    You must agree before submitting.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-controls">
+                        <button type="button" class="btn btn-outline-secondary prev-step" data-step="3"><i
+                                class="fas fa-arrow-left me-1"></i> Previous</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-1"></i> Submit Complaint
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Your JavaScript code here
+        });
+    </script>
